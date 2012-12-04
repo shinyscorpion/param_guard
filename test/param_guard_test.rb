@@ -67,7 +67,7 @@ class ParamGuardTest < Test::Unit::TestCase
 
   def test_filter_accept_multiparams
     defs = {
-      dob: [:required, :multi]
+      :dob => [:required, :multi]
     }
     params = { "dob(1i)" => 1999, "dob(2i)" => 1, "dob(3i)" => 1 }
     filtered = ParamGuard.filter(params, defs)
@@ -76,7 +76,7 @@ class ParamGuardTest < Test::Unit::TestCase
 
   def test_filter_accept_multiparams_when_scalar_or_multi_expected
     defs = {
-      dob: [:required, [:scalar, :multi]]
+      :dob => [:required, [:scalar, :multi]]
     }
     params = { "dob(1i)" => "1999", "dob(2i)" => "1", "dob(3i)" => "1" }
     filtered = ParamGuard.filter(params, defs)
@@ -85,7 +85,7 @@ class ParamGuardTest < Test::Unit::TestCase
 
   def test_filter_accept_scalar_when_scalar_or_multi_expected
     defs = {
-      dob: [:required, [:scalar, :multi]]
+      :dob => [:required, [:scalar, :multi]]
     }
     params = { "dob" => "1999-01-01" }
     filtered = ParamGuard.filter(params, defs)
@@ -94,7 +94,7 @@ class ParamGuardTest < Test::Unit::TestCase
 
   def test_filter_raise_if_not_multiparams_given
     defs = {
-      dob: [:required, :multi]
+      :dob => [:required, :multi]
     }
     params = { "dob" => "1999-01-02" }
     assert_raise ParamGuard::ParameterOfInvalidType do
@@ -104,7 +104,7 @@ class ParamGuardTest < Test::Unit::TestCase
 
   def test_filter_accept_multiparams_or_scalar
     defs = {
-      dob: [:required, [:scalar, :multi]]
+      :dob => [:required, [:scalar, :multi]]
     }
     params = { "dob" => "1999-01-02" }
     filtered = ParamGuard.filter(params, defs)
