@@ -1,0 +1,82 @@
+= Param Guard
+
+Simple utility to check the format of request params, e.g. in a Rails controller, but it can be used on any hash-like Ruby structure.
+
+== Installation
+
+In Gemfile:
+
+    gem 'param_guard'
+
+== Example
+
+For example, in your controller, you could do:
+
+    def create
+      @user = User.new(user_params)
+      # ...
+    end
+
+    def user_params
+      ParamGuard.filter(
+        params,
+        {
+          user:                   [:required, :hash, {
+            email:                  [:permitted, :scalar],
+            password:               [:permitted, :scalar],
+            password_confirmation:  [:permitted, :scalar],
+            profile_attributes:     [:required, :hash, {
+              date_of_birth:          [:permitted, [:scalar, :multi]],
+              country_id:             [:permitted, [:scalar]],
+              terms_ok:               [:permitted, [:scalar]],
+            }]
+          }]
+        }
+      )[:user]
+    end
+
+== Definition format
+
+The definition should be a hash. The key represents a key in the params hash the value is an array of 2 or 3 values.
+
+[1st item]
+  <code>:required</code> or <code>:permitted</code>.
+
+[2nd item]
+  The 2nd item: the expected format of the value
+
+  - <code>:string</code>
+  - <code>:integer</code>
+  - <code>:float</code>
+  - <code>:hash</code>
+  - <code>:scalar</code> - non-structured types
+  - <code>:array</code>
+  - <code>:multi</code> - multi-parameter values handled by Rails, typically dates and times
+
+  The required type can also be an array, if any of these matches the value the value will be accepted.
+
+[3rd item]
+
+  If the type is a hash, these will be the definition for the nested hash.
+
+See the tests for examples.
+
+== Return values
+
+This will return a duplicate of params, from which parameters that are not mentioned, will be removed.
+
+== Exceptions
+
+If a key is required, but is not specified, a <code>ParamGuard::ParameterMissing</code> exception will be raised.
+
+If the type is not right, <code>ParamGuard::ParameterOfInvalidType</code> will be raised.
+
+Both are a sublass of <code>ParamGuard::InvalidParameters</code>.
+
+You should catch these in the controller and respond with HTTP 400 Bad Request. E.g. in you +ApplicationController+:
+
+    rescue_from ParamGuard::InvalidParameters do |exception|
+      Rails.logger.info "Bad Request: #{exception.message}"
+      render :text => exception.message, :status => :bad_request
+    end
+
