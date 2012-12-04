@@ -2,6 +2,8 @@
 
 Simple utility to check the format of request params, e.g. in a Rails controller, but it can be used on any hash-like Ruby structure.
 
+{<img src="https://travis-ci.org/bagilevi/param_guard.png?branch=master" />}[https://travis-ci.org/bagilevi/param_guard?branch=master]
+
 == Installation
 
 In Gemfile:
